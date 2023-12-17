@@ -2,3 +2,7 @@ data/
 plot/
 model.png
 fontlist-v330.json
+gurro.py
+temp.py
+__pycache__/
+saved_models/

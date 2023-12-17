@@ -96,7 +96,7 @@ def inspect_multivariate(X, y, telescope, idx=None, n=5):
         idx = np.random.randint(0, len(X))
 
     # Plot three sequences chosen based on idx
-    figs, axs = plt.subplots(n, 1, sharex=True, figsize=(30, 2 * n))
+    figs, axs = plt.subplots(n, 1, sharex=True, figsize=(30, 3 * n))
     for i in range(idx, idx + n):
         axs[i - idx].plot(np.arange(len(X[i])), X[i])
         axs[i - idx].scatter(
@@ -112,7 +112,7 @@ def inspect_multivariate_prediction(X, y, pred, telescope, idx=None, n=5):
         idx = np.random.randint(0, len(X))
 
     # Plot n sequences chosen based on idx
-    figs, axs = plt.subplots(n, 1, sharex=True, figsize=(30, 2 * n))
+    figs, axs = plt.subplots(n, 1, sharex=True, figsize=(30, 3 * n))
     for i in range(idx, idx + n):
         axs[i - idx].plot(np.arange(len(X[i])), X[i])
         axs[i - idx].scatter(
