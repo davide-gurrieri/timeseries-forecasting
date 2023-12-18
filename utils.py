@@ -1,6 +1,7 @@
-import numpy as np
-import matplotlib.pyplot as plt
+from imports import *
+from preprocessing_params import *
 
+######################### SEQUENCES #########################
 
 def build_sequences(data, valid_periods, window, stride, telescope):
     assert window % stride == 0
@@ -60,6 +61,7 @@ def build_multiclass_sequences(
         labels_list.append(labels)
     return dataset_list, labels_list
 
+######################### PLOTS #########################
 
 def plot_matrix(matrix, save=False, show=True, name="data"):
     # Create a binary mask where 1 represents non-zero values
@@ -79,14 +81,18 @@ def plot_matrix(matrix, save=False, show=True, name="data"):
 
 
 # print n random timeseries of a specific category
-def plot_time_series(data, categories, category="A", n=5):
-    data_cat = data[categories == category]
+def plot_time_series(data, categories=None, category=None, n=5, random=True):
+    if category is not None and categories is not None:
+        data = data[categories == category]
     # exctract n random indices from 0 to len(data_cat)
-    indices = np.random.randint(0, len(data_cat), n)
+    if random:
+        indices = np.random.choice(len(data), n, replace=False)
+    else:
+        indices = np.arange(n)
 
     figs, axs = plt.subplots(len(indices), 1, sharex=True, figsize=(17, 2 * n))
     for i, idx in enumerate(indices):
-        axs[i].plot(data_cat[idx])
+        axs[i].plot(data[idx])
         # axs[i].set_title(idx)
     plt.show()
 
@@ -124,3 +130,18 @@ def inspect_multivariate_prediction(X, y, pred, telescope, idx=None, n=5):
         axs[i - idx].set_title("Sequence {}".format(i))
         axs[i - idx].set_ylim(0, 1)
     plt.show()
+
+
+######################### AUGMENTATIONS #########################
+
+def jitter(x, sigma=0.025):
+    # sample the standard deviation
+    sigma = tf.random.uniform(shape=[], minval=0.015, maxval=0.03)
+    # apply noise to all the time series except the last TELESCOPE time stamps
+    x_shape = tf.shape(x)
+    noise_shape = (x_shape[0], x_shape[1]-TELESCOPE, x_shape[2])
+    zeros_shape = (x_shape[0], TELESCOPE, x_shape[2])
+    noise = tf.random.normal(shape=noise_shape, mean=0., stddev=sigma, dtype=tf.float32)
+    zeros = tf.zeros(shape=zeros_shape, dtype=tf.float32)
+    noise = tf.concat((noise, zeros), axis=1)
+    return x + noise

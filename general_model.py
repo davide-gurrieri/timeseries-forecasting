@@ -1,5 +1,6 @@
 from imports import *
 from preprocessing_params import *
+import utils
 
 
 class GeneralModel:
@@ -132,5 +133,21 @@ class GeneralModel:
             if not isinstance(layer, tf.keras.layers.BatchNormalization):
                 layer.trainable=True
         self.compile()
+        
+
+# augmentation
+class DataAugmentation(tfk.layers.Layer):
+    def __init__(self, prob=0.3, **kwargs):
+        super().__init__(**kwargs)
+        self.prob = prob
+        
+    def call(self, inputs, training=None):
+        if training:
+            # extract a random number from a uniform distribution between 0 and 1
+            random_number = tf.random.uniform(shape=[], minval=0, maxval=1)
+            # if the random number is less than the probability, apply the augmentation
+            if random_number < self.prob:
+                inputs = utils.jitter(inputs)
+        return inputs
     
 

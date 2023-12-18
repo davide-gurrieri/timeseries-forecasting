@@ -1,6 +1,6 @@
 from imports import *
 from preprocessing_params import *
-from general_model import GeneralModel
+from general_model import GeneralModel, DataAugmentation
 
 
 build_param_1 = {
@@ -21,6 +21,7 @@ fit_param_1 = {
             monitor="val_loss",
             patience=6,
             mode="min",
+            min_delta=0.00001,
             restore_best_weights=True
         ),
         tfk.callbacks.ReduceLROnPlateau(
@@ -45,8 +46,10 @@ class ConvLSTMDense(GeneralModel):
         relu_init = tfk.initializers.HeUniform(seed=self.seed)
 
         input_layer = tfkl.Input(shape=self.build_kwargs["input_shape"], name="Input")
+        
+        x = DataAugmentation()(input_layer)
 
-        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm'), name='bidirectional_lstm')(input_layer)
+        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm'), name='bidirectional_lstm')(x)
 
         x = tfkl.Conv1D(32, 3, padding='same', activation='relu', name='conv')(x)
         
