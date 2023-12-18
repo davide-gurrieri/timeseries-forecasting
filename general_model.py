@@ -137,9 +137,11 @@ class GeneralModel:
 
 # augmentation
 class DataAugmentation(tfk.layers.Layer):
-    def __init__(self, prob=0.3, **kwargs):
+    def __init__(self, prob=0.3, min_sigma=0.015, max_sigma=0.04, **kwargs):
         super().__init__(**kwargs)
         self.prob = prob
+        self.min_sigma = min_sigma
+        self.max_sigma = max_sigma
     
     @tf.function
     def call(self, inputs, training=None):
@@ -148,7 +150,7 @@ class DataAugmentation(tfk.layers.Layer):
             random_number = tf.random.uniform(shape=[], minval=0, maxval=1)
             # if the random number is less than the probability, apply the augmentation
             if random_number < self.prob:
-                inputs = utils.jitter(inputs)
+                inputs = utils.jitter(inputs, min_sigma=self.min_sigma, max_sigma=self.min_sigma)
         return inputs
     
 
