@@ -137,7 +137,7 @@ class GeneralModel:
 
 # augmentation
 class DataAugmentation(tfk.layers.Layer):
-    def __init__(self, prob=0.3, **kwargs):
+    def __init__(self, prob=0.5, **kwargs):
         super().__init__(**kwargs)
         self.prob = prob
     
