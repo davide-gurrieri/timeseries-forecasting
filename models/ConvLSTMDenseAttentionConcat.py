@@ -1,6 +1,6 @@
 from imports import *
 from preprocessing_params import *
-from general_model import GeneralModel
+from general_model import GeneralModel, DataAugmentation
 
 
 build_param_1 = {
