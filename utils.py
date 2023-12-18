@@ -134,6 +134,7 @@ def inspect_multivariate_prediction(X, y, pred, telescope, idx=None, n=5):
 
 ######################### AUGMENTATIONS #########################
 
+@tf.function
 def jitter(x, sigma=0.025):
     # sample the standard deviation
     sigma = tf.random.uniform(shape=[], minval=0.015, maxval=0.03)

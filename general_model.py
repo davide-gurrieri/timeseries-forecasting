@@ -140,7 +140,8 @@ class DataAugmentation(tfk.layers.Layer):
     def __init__(self, prob=0.3, **kwargs):
         super().__init__(**kwargs)
         self.prob = prob
-        
+    
+    @tf.function
     def call(self, inputs, training=None):
         if training:
             # extract a random number from a uniform distribution between 0 and 1
