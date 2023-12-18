@@ -28,6 +28,43 @@ def build_sequences_1(data, valid_periods, window, stride, telescope):
     labels = np.array(labels)
     return dataset, labels
 
+# build_sequences without any padding
+def build_sequences_3(data, valid_periods, window, stride, telescope):
+    assert window % stride == 0
+    dataset = []
+    labels = []
+    # iterate over the rows of the dataframe
+    for i, time_series in enumerate(data):
+        time_series = time_series[valid_periods[i][0] : valid_periods[i][1]]
+        time_series = np.expand_dims(time_series, axis=-1)
+        
+        # remove the timeseries that are too short
+        if valid_periods[i][1] - valid_periods[i][0] <= (window + telescope):
+            continue
+
+        else:
+            padding_check = (len(time_series) - (window + telescope)) % stride
+
+            if padding_check != 0:
+                # Compute padding length
+                padding_len = stride - padding_check
+                # padding is done only for simplicity of computing the first sequence (window, telescope)
+                padding = np.zeros((padding_len, 1), dtype="float32")
+                time_series = np.concatenate((padding, time_series))
+                # assert len(time_series) % window == 0
+
+            for idx in np.arange(0, len(time_series) - window - telescope, stride):
+                if (padding_check != 0 and idx == 0):
+                    dataset.append(time_series[padding_len: padding_len + window])
+                    labels.append(time_series[padding_len + window : padding_len + window + telescope])
+
+                else: 
+                    dataset.append(time_series[idx : idx + window])
+                    labels.append(time_series[idx + window : idx + window + telescope])
+
+    dataset = np.array(dataset)
+    labels = np.array(labels)
+    return dataset, labels
 
 def build_sequences_2(data, valid_periods=None, window = WINDOW, telescope = TELESCOPE, stride=STRIDE, remove_short=False, min_len=72, padding_type='constant'):
     large_window = window + telescope
