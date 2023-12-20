@@ -48,7 +48,7 @@ class ConvLSTMDenseAttentionConcat(GeneralModel):
         
         x = DataAugmentation()(input_layer)
 
-        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm'), name='bidirectional_lstm')(x)
+        x = tfkl.Bidirectional(tfkl.LSTM(64, activation="relu", return_sequences=True, name='lstm'), name='bidirectional_lstm')(x)
         
         # Add an attention mechanism
         attention = tfkl.Attention(use_scale=True, score_mode='concat')([x, x])
@@ -56,7 +56,7 @@ class ConvLSTMDenseAttentionConcat(GeneralModel):
         # Concatenate the attention output with the LSTM output
         attended_output = tfkl.Concatenate(axis=-1, name='concatenate_attention')([x, attention])
 
-        x = tfkl.Conv1D(32, 3, padding='same', activation='relu', name='conv')(attended_output)
+        x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv')(attended_output)
         
         x = tfkl.Flatten()(x)
 
