@@ -58,7 +58,7 @@ class ConvLSTMDenseAttentionDotGAP(GeneralModel):
 
         x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv')(attended_output)
         
-        x = tfkl.Conv1D(32, 3, padding='same', activation='relu', name='conv')(x)
+        x = tfkl.Conv1D(32, 3, padding='same', activation='relu', name='conv2')(x)
         
         x = tfkl.GlobalAveragePooling1D()(x)
 
