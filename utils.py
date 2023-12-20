@@ -66,14 +66,12 @@ def build_sequences_3(data, valid_periods, window, stride, telescope):
     labels = np.array(labels)
     return dataset, labels
 
-def build_sequences_2(data, valid_periods=None, window = WINDOW, telescope = TELESCOPE, stride=STRIDE, remove_short=False, min_len=72, padding_type='constant'):
+def build_sequences_2(data, valid_periods=None, window = WINDOW, telescope = TELESCOPE, stride=STRIDE, min_len=72, repeat_first=True, padding_type='constant'):
     large_window = window + telescope
     dataset = []
     for i, time_series in enumerate(data):
         if valid_periods is not None:
             time_series = time_series[valid_periods[i][0] : valid_periods[i][1]]
-        if remove_short and len(time_series) < large_window:
-            continue
         if len(time_series) < min_len:
             continue
         if len(time_series) < large_window:
@@ -88,14 +86,17 @@ def build_sequences_2(data, valid_periods=None, window = WINDOW, telescope = TEL
             padding_check = (len(time_series) - large_window) % stride
             if padding_check != 0:
                 padding_len = stride - padding_check
-                if padding_type == 'constant':
-                    time_series = np.pad(time_series, (padding_len, 0), padding_type, constant_values=PADDING_VALUE)
-                else:
-                    time_series = np.pad(time_series, (padding_len, 0), padding_type)
+                if not repeat_first:
+                    if padding_type == 'constant':
+                        time_series = np.pad(time_series, (padding_len, 0), padding_type, constant_values=PADDING_VALUE)
+                    else:
+                        time_series = np.pad(time_series, (padding_len, 0), padding_type)
             start = len(time_series) - large_window
             while start >= 0:
                 dataset.append(time_series[start:start+large_window])
                 start -= stride
+            if repeat_first and padding_check != 0:
+                dataset.append(time_series[:large_window])
             
     dataset = np.array(dataset)
     dataset = np.expand_dims(dataset, axis=-1)
@@ -108,7 +109,6 @@ def build_sequences_2(data, valid_periods=None, window = WINDOW, telescope = TEL
 
 # build_sequences without any padding
 def build_sequences_3(data, valid_periods, window, stride, telescope):
-    assert window % stride == 0
     dataset = []
     labels = []
     # iterate over the rows of the dataframe
