@@ -14,7 +14,7 @@ compile_param_1 = {
 }
 
 fit_param_1 = {
-    "batch_size": 512,
+    "batch_size": 256,
     "epochs": 200,
     "callbacks": [
         tfk.callbacks.EarlyStopping(
@@ -36,24 +36,21 @@ class ConvLSTMDense(GeneralModel):
     def build(self):
         tf.random.set_seed(self.seed)
 
-        relu_init = tfk.initializers.HeUniform(seed=self.seed)
-
         input_layer = tfkl.Input(shape=self.build_kwargs["input_shape"], name="Input")
         
         x = DataAugmentation(prob=0.4, min_sigma=0.015, max_sigma=0.04)(input_layer)
         
         # x = tfkl.Masking(mask_value=PADDING_VALUE)
 
-        x = tfkl.Bidirectional(tfkl.LSTM(100, return_sequences=True, name='lstm', kernel_initializer=relu_init), name='bidirectional_lstm')(x)
+        x = tfkl.Bidirectional(tfkl.LSTM(96, return_sequences=True, name='lstm'), name='bidirectional_lstm')(x)
 
-        x = tfkl.Conv1D(60, 3, padding='same', activation='relu', name='conv', kernel_initializer=relu_init)(x)
+        x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv')(x)
         
         x = tfkl.Flatten()(x)
 
         output_layer = tfkl.Dense(
             units=self.build_kwargs["output_shape"],
             activation="relu",
-            kernel_initializer=relu_init,
             name="Output",
         )(x)
 
