@@ -253,12 +253,16 @@ def inspect_multivariate_prediction(X, y, pred, telescope, idx=None, n=5):
 @tf.function
 def jitter(x, min_sigma=0.015, max_sigma=0.04):
     # sample the standard deviation
+    MANTAIN  = 7
     sigma = tf.random.uniform(shape=[], minval=min_sigma, maxval=max_sigma)
     # apply noise to all the time series except the last TELESCOPE time stamps
     x_shape = tf.shape(x)
-    noise_shape = (x_shape[0], x_shape[1]-TELESCOPE, x_shape[2])
-    zeros_shape = (x_shape[0], TELESCOPE, x_shape[2])
-    noise = tf.random.normal(shape=noise_shape, mean=0., stddev=sigma, dtype=tf.float32)
+    noise_shape = (x_shape[0], x_shape[1]-MANTAIN, x_shape[2])
+    zeros_shape = (x_shape[0], MANTAIN, x_shape[2])
+    
+    mask = tf.equal(x[:,:-MANTAIN], PADDING_VALUE)
+    noise = tf.where(mask, tf.zeros_like(x[:,:-MANTAIN]), tf.random.normal(shape=noise_shape, mean=0., stddev=sigma, dtype=tf.float32))
     zeros = tf.zeros(shape=zeros_shape, dtype=tf.float32)
     noise = tf.concat((noise, zeros), axis=1)
     return x + noise
+
