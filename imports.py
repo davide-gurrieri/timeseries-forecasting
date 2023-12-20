@@ -36,17 +36,4 @@ print(tf.__version__)
 
 # Import other libraries
 import matplotlib.pyplot as plt
-import pandas as pd
-from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
-from sklearn.metrics import (
-    accuracy_score,
-    f1_score,
-    precision_score,
-    recall_score,
-    confusion_matrix,
-)
-import seaborn as sns
-import keras_cv
-
-# from keras.applications.mobilenet import preprocess_input
-from sklearn.utils.class_weight import compute_class_weight
+from sklearn.model_selection import train_test_split
