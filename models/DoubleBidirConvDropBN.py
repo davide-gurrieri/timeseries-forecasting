@@ -43,24 +43,22 @@ class DoubleBidirConvDropBN(GeneralModel):
 
         x = tfkl.Dropout(0.1)(x)
 
-        x = tfkl.Conv1D(128, 3, padding='same', activation='relu', name='conv_0')(x)
-        x = tfkl.BatchNormalization()(x)  
-        #x = tfkl.Dropout(0.5)(x)  
+        x = tfkl.Conv1D(128, 3, padding='same', activation='relu', name='conv_0')(x) 
+        x = tfkl.Dropout(0.5)(x)
+        x = tfkl.BatchNormalization()(x) 
 
-        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm_1'), name='bidirectional_lstm')(x)
-        x = tfkl.BatchNormalization()(x)  
+        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm_1'), name='bidirectional_lstm')(x)  
 
         x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv_1')(x)
-        x = tfkl.BatchNormalization()(x)  
+        x = tfkl.BatchNormalization(momentum=0.9, epsilon=1e-5)(x)  
 
-        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm_2'), name='bidirectional_lstm_2')(x)
-        x = tfkl.BatchNormalization()(x)  
+        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm_2'), name='bidirectional_lstm_2')(x) 
 
         x = tfkl.Conv1D(128, 3, padding='same', activation='relu', name='conv_2')(x)
-        x = tfkl.BatchNormalization()(x)  
+        x = tfkl.BatchNormalization(momentum=0.9, epsilon=1e-5)(x)  
 
         x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv_3')(x)
-        x = tfkl.BatchNormalization()(x)  
+        x = tfkl.BatchNormalization(momentum=0.9, epsilon=1e-5)(x)  
 
         x = tfkl.Flatten()(x)
 
