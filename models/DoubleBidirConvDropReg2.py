@@ -45,15 +45,14 @@ class DoubleBidirConvDropReg2(GeneralModel):
 
         x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv_0')(x) 
         
-        x = tfkl.Dropout(0.2)(x)
+        x = tfkl.Dropout(0.1)(x)
          
-
-        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, kernel_regularizer=tfk.regularizers.l2(1e-4), name='lstm_1'),
+        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm_1'),
             name='bidirectional_lstm')(x)  
 
         x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv_1')(x) 
 
-        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, kernel_regularizer=tfk.regularizers.l2(1e-4), name='lstm_2'),
+        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True), name='lstm_2'),
             name='bidirectional_lstm_2')(x) 
 
         x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv_2')(x)  
@@ -64,12 +63,11 @@ class DoubleBidirConvDropReg2(GeneralModel):
 
         x = tfkl.Flatten()(x)
 
-        x = tfkl.Dropout(0.3)(x)
+        x = tfkl.Dropout(0.2)(x)
 
         output_layer = tfkl.Dense(
             units=self.build_kwargs["output_shape"],
-            kernel_regularizer=tfk.regularizers.l2(1e-4),
-            activation="sigmoid",
+            activation="relu",
             name="Output",
         )(x)
 
