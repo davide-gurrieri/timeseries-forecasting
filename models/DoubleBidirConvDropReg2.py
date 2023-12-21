@@ -29,7 +29,7 @@ fit_param_1 = {
 }
 
 
-class DoubleBidirConvDropReg(GeneralModel):
+class DoubleBidirConvDropReg2(GeneralModel):
     def __init__(self, name, build_kwargs, compile_kwargs, fit_kwargs):
         super().__init__(build_kwargs, compile_kwargs, fit_kwargs)
         self.name = name
@@ -60,7 +60,7 @@ class DoubleBidirConvDropReg(GeneralModel):
 
         x = tfkl.Conv1D(128, 3, padding='same', activation='relu', name='conv_3')(x)
         
-        x = tfkl.Conv1D(256, 3, padding='same', activation='relu', name='conv_3')(x) 
+        x = tfkl.Conv1D(256, 3, padding='same', activation='relu', name='conv_4')(x) 
 
         x = tfkl.Flatten()(x)
 
