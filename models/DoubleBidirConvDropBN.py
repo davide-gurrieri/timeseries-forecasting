@@ -53,7 +53,7 @@ class DoubleBidirConvDropBN(GeneralModel):
         x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv_1')(x)
         x = tfkl.BatchNormalization()(x)  
 
-        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm_2'), name='bidirectional_lstm')(x)
+        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm_2'), name='bidirectional_lstm_2')(x)
         x = tfkl.BatchNormalization()(x)  
 
         x = tfkl.Conv1D(128, 3, padding='same', activation='relu', name='conv_2')(x)
