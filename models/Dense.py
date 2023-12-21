@@ -20,7 +20,7 @@ fit_param_1 = {
     "callbacks": [
         tfk.callbacks.EarlyStopping(
             monitor="val_loss",
-            patience=10,
+            patience=25,
             mode="min",
             min_delta=0.00001,
             restore_best_weights=True
@@ -49,7 +49,11 @@ class Dense(GeneralModel):
         
         x = tfkl.Dense(512,activation = "relu")(x)
         
+        x = tfkl.Dropout(0.2)(x)
+        
         x = tfkl.Dense(256,activation = "relu")(x)
+        
+        x = tfkl.Dropout(0.2)(x)
 
         output_layer = tfkl.Dense(
             units=self.build_kwargs["output_shape"],
