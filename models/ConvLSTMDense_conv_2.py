@@ -28,7 +28,7 @@ fit_param_1 = {
 }
 
 
-class ConvLSTMDense_conv(GeneralModel):
+class ConvLSTMDense_conv_2(GeneralModel):
     def __init__(self, name, build_kwargs, compile_kwargs, fit_kwargs):
         super().__init__(build_kwargs, compile_kwargs, fit_kwargs)
         self.name = name
