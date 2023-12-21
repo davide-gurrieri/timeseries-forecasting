@@ -62,10 +62,11 @@ class DoubleBidirConvDropReg(GeneralModel):
 
         x = tfkl.Flatten()(x)
 
-        x = tfkl.Dropout(0.1)(x)
+        x = tfkl.Dropout(0.3)(x)
 
         output_layer = tfkl.Dense(
             units=self.build_kwargs["output_shape"],
+            kernel_regularizer=tfk.regularizers.l2(1e-4),
             activation="sigmoid",
             name="Output",
         )(x)
