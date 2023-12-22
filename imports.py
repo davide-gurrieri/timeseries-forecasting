@@ -24,6 +24,7 @@ random.seed(SEED)
 
 # Import tensorflow
 import tensorflow as tf
+
 tfk = tf.keras
 tfkl = tf.keras.layers
 
@@ -35,5 +36,6 @@ tf.compat.v1.set_random_seed(SEED)
 print(tf.__version__)
 
 # Import other libraries
+import statsmodels.graphics.tsaplots.plot_acf as plot_acf
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
