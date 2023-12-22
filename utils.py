@@ -3,6 +3,7 @@ from preprocessing_params import *
 
 ######################### SEQUENCES #########################
 
+
 def build_sequences_1(data, valid_periods, window, stride, telescope):
     assert window % stride == 0
     dataset = []
@@ -28,6 +29,7 @@ def build_sequences_1(data, valid_periods, window, stride, telescope):
     labels = np.array(labels)
     return dataset, labels
 
+
 # build_sequences without any padding
 def build_sequences_3(data, valid_periods, window, stride, telescope):
     assert window % stride == 0
@@ -37,7 +39,7 @@ def build_sequences_3(data, valid_periods, window, stride, telescope):
     for i, time_series in enumerate(data):
         time_series = time_series[valid_periods[i][0] : valid_periods[i][1]]
         time_series = np.expand_dims(time_series, axis=-1)
-        
+
         # remove the timeseries that are too short
         if valid_periods[i][1] - valid_periods[i][0] <= (window + telescope):
             continue
@@ -54,11 +56,15 @@ def build_sequences_3(data, valid_periods, window, stride, telescope):
                 # assert len(time_series) % window == 0
 
             for idx in np.arange(0, len(time_series) - window - telescope, stride):
-                if (padding_check != 0 and idx == 0):
-                    dataset.append(time_series[padding_len: padding_len + window])
-                    labels.append(time_series[padding_len + window : padding_len + window + telescope])
+                if padding_check != 0 and idx == 0:
+                    dataset.append(time_series[padding_len : padding_len + window])
+                    labels.append(
+                        time_series[
+                            padding_len + window : padding_len + window + telescope
+                        ]
+                    )
 
-                else: 
+                else:
                     dataset.append(time_series[idx : idx + window])
                     labels.append(time_series[idx + window : idx + window + telescope])
 
@@ -66,7 +72,17 @@ def build_sequences_3(data, valid_periods, window, stride, telescope):
     labels = np.array(labels)
     return dataset, labels
 
-def build_sequences_2(data, valid_periods=None, window = WINDOW, telescope = TELESCOPE, stride=STRIDE, min_len=72, repeat_first=True, padding_type='constant'):
+
+def build_sequences_2(
+    data,
+    valid_periods=None,
+    window=WINDOW,
+    telescope=TELESCOPE,
+    stride=STRIDE,
+    min_len=72,
+    repeat_first=True,
+    padding_type="constant",
+):
     large_window = window + telescope
     dataset = []
     for i, time_series in enumerate(data):
@@ -76,34 +92,48 @@ def build_sequences_2(data, valid_periods=None, window = WINDOW, telescope = TEL
             continue
         if len(time_series) < large_window:
             prev_len = len(time_series)
-            if padding_type == 'constant':
-                time_series = np.pad(time_series, (large_window - prev_len, 0), padding_type, constant_values=PADDING_VALUE)
+            if padding_type == "constant":
+                time_series = np.pad(
+                    time_series,
+                    (large_window - prev_len, 0),
+                    padding_type,
+                    constant_values=PADDING_VALUE,
+                )
             else:
-                time_series = np.pad(time_series, (large_window - prev_len, 0), padding_type)
+                time_series = np.pad(
+                    time_series, (large_window - prev_len, 0), padding_type
+                )
             dataset.append(time_series)
-            
+
         else:
             padding_check = (len(time_series) - large_window) % stride
             if padding_check != 0:
                 padding_len = stride - padding_check
                 if not repeat_first:
-                    if padding_type == 'constant':
-                        time_series = np.pad(time_series, (padding_len, 0), padding_type, constant_values=PADDING_VALUE)
+                    if padding_type == "constant":
+                        time_series = np.pad(
+                            time_series,
+                            (padding_len, 0),
+                            padding_type,
+                            constant_values=PADDING_VALUE,
+                        )
                     else:
-                        time_series = np.pad(time_series, (padding_len, 0), padding_type)
+                        time_series = np.pad(
+                            time_series, (padding_len, 0), padding_type
+                        )
             start = len(time_series) - large_window
             while start >= 0:
-                dataset.append(time_series[start:start+large_window])
+                dataset.append(time_series[start : start + large_window])
                 start -= stride
             if repeat_first and padding_check != 0:
                 dataset.append(time_series[:large_window])
-            
+
     dataset = np.array(dataset)
     dataset = np.expand_dims(dataset, axis=-1)
-    
+
     labels = dataset[:, -telescope:]
     dataset = dataset[:, :-telescope]
-    
+
     return dataset, labels
 
 
@@ -132,11 +162,15 @@ def build_sequences_3(data, valid_periods, window, stride, telescope):
                 # assert len(time_series) % window == 0
 
             for idx in np.arange(0, len(time_series) - window - telescope, stride):
-                if (padding_check != 0 and idx == 0):
-                    dataset.append(time_series[padding_len: padding_len + window])
-                    labels.append(time_series[padding_len + window : padding_len + window + telescope])
+                if padding_check != 0 and idx == 0:
+                    dataset.append(time_series[padding_len : padding_len + window])
+                    labels.append(
+                        time_series[
+                            padding_len + window : padding_len + window + telescope
+                        ]
+                    )
 
-                else: 
+                else:
                     dataset.append(time_series[idx : idx + window])
                     labels.append(time_series[idx + window : idx + window + telescope])
 
@@ -177,7 +211,28 @@ def build_multiclass_sequences(
         labels_list.append(labels)
     return dataset_list, labels_list
 
+
 ######################### PLOTS #########################
+
+
+def inspect_timeseries_autocorr(data, categories, save=False, show=True, category="A"):
+    # len = np.sum(categories == category)
+    # idx = np.where(categories, categories == category)
+    idx = np.arange(len(categories))[categories == category]
+    rand_idx = np.random.choice(idx, replace=False)
+    # plt.figure()
+    plot_acf(data[rand_idx, :], lags=100)
+    plt.title("Autocorrelation category " + category)
+    # pyplot.show()
+
+    # Save the plot
+    if save:
+        plt.savefig("plot/" + "autocorr" + category + ".pdf", format="pdf")
+
+    # Show the plot
+    if not show:
+        plt.close()
+
 
 def plot_matrix(matrix, save=False, show=True, name="data"):
     # Create a binary mask where 1 represents non-zero values
@@ -250,19 +305,23 @@ def inspect_multivariate_prediction(X, y, pred, telescope, idx=None, n=5):
 
 ######################### AUGMENTATIONS #########################
 
+
 @tf.function
 def jitter(x, min_sigma=0.015, max_sigma=0.04):
     # sample the standard deviation
-    MANTAIN  = 7
+    MANTAIN = 7
     sigma = tf.random.uniform(shape=[], minval=min_sigma, maxval=max_sigma)
     # apply noise to all the time series except the last TELESCOPE time stamps
     x_shape = tf.shape(x)
-    noise_shape = (x_shape[0], x_shape[1]-MANTAIN, x_shape[2])
+    noise_shape = (x_shape[0], x_shape[1] - MANTAIN, x_shape[2])
     zeros_shape = (x_shape[0], MANTAIN, x_shape[2])
-    
-    mask = tf.equal(x[:,:-MANTAIN], PADDING_VALUE)
-    noise = tf.where(mask, tf.zeros_like(x[:,:-MANTAIN]), tf.random.normal(shape=noise_shape, mean=0., stddev=sigma, dtype=tf.float32))
+
+    mask = tf.equal(x[:, :-MANTAIN], PADDING_VALUE)
+    noise = tf.where(
+        mask,
+        tf.zeros_like(x[:, :-MANTAIN]),
+        tf.random.normal(shape=noise_shape, mean=0.0, stddev=sigma, dtype=tf.float32),
+    )
     zeros = tf.zeros(shape=zeros_shape, dtype=tf.float32)
     noise = tf.concat((noise, zeros), axis=1)
     return x + noise
-
