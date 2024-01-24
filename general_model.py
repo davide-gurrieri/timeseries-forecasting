@@ -99,11 +99,11 @@ class GeneralModel:
             plt.grid(alpha=0.3)
 
         plt.show()
-        
+
     def predict(self, x_eval):
         predictions = self.model.predict(x_eval, verbose=0)
         return predictions
-        
+
     def evaluate(self, x_eval, y_eval):
         """
         Evaluate the model on the evaluation set.
@@ -116,13 +116,15 @@ class GeneralModel:
             Evaluation target data
         """
         predictions = self.predict(x_eval)
-        mean_squared_error = tfk.metrics.mean_squared_error(y_eval.flatten(), predictions.flatten()).numpy()
+        mean_squared_error = tfk.metrics.mean_squared_error(
+            y_eval.flatten(), predictions.flatten()
+        ).numpy()
         print(f"Mean Squared Error: {mean_squared_error}")
-    
+
     def print_base_model(self):
         for i, layer in enumerate(self.model.get_layer(self.base_model.name).layers):
             print(i, layer.name, layer.trainable)
-        
+
     def unfreeze_layers(self, start=None, end=None):
         if start is None:
             start = 0
@@ -131,9 +133,9 @@ class GeneralModel:
         self.model.get_layer(self.base_model.name).trainable = True
         for layer in self.model.get_layer(self.base_model.name).layers[start:end]:
             if not isinstance(layer, tf.keras.layers.BatchNormalization):
-                layer.trainable=True
+                layer.trainable = True
         self.compile()
-        
+
 
 # augmentation
 class DataAugmentation(tfk.layers.Layer):
@@ -142,7 +144,7 @@ class DataAugmentation(tfk.layers.Layer):
         self.prob = prob
         self.min_sigma = min_sigma
         self.max_sigma = max_sigma
-    
+
     @tf.function
     def call(self, inputs, training=None):
         if training:
@@ -150,7 +152,7 @@ class DataAugmentation(tfk.layers.Layer):
             random_number = tf.random.uniform(shape=[], minval=0, maxval=1)
             # if the random number is less than the probability, apply the augmentation
             if random_number < self.prob:
-                inputs = utils.jitter(inputs, min_sigma=self.min_sigma, max_sigma=self.min_sigma)
+                inputs = utils.jitter(
+                    inputs, min_sigma=self.min_sigma, max_sigma=self.min_sigma
+                )
         return inputs
-    
-

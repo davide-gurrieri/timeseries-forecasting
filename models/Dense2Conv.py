@@ -11,7 +11,7 @@ build_param_1 = {
 compile_param_1 = {
     "loss": tfk.losses.MeanSquaredError(),
     "optimizer": tfk.optimizers.Adam(learning_rate=0.001),
-    "metrics":['mae'],
+    "metrics": ["mae"],
 }
 
 fit_param_1 = {
@@ -23,15 +23,11 @@ fit_param_1 = {
             patience=25,
             mode="min",
             min_delta=0.00001,
-            restore_best_weights=True
+            restore_best_weights=True,
         ),
         tfk.callbacks.ReduceLROnPlateau(
-            monitor='val_loss',
-            mode='min',
-            patience=10,
-            factor=0.1,
-            min_lr=1e-5
-        )
+            monitor="val_loss", mode="min", patience=10, factor=0.1, min_lr=1e-5
+        ),
     ],
 }
 
@@ -45,23 +41,26 @@ class Dense2Conv(GeneralModel):
         tf.random.set_seed(self.seed)
 
         input_layer = tfkl.Input(shape=self.build_kwargs["input_shape"], name="Input")
-        
+
         x = DataAugmentation(prob=0.4, min_sigma=0.015, max_sigma=0.03)(input_layer)
-        
-        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm_1'), name='bidirectional_lstm')(x)
-        
-        x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv')(x)
-        
+
+        x = tfkl.Bidirectional(
+            tfkl.LSTM(64, return_sequences=True, name="lstm_1"),
+            name="bidirectional_lstm",
+        )(x)
+
+        x = tfkl.Conv1D(64, 3, padding="same", activation="relu", name="conv")(x)
+
         x = tfkl.Flatten()(x)
-        
+
         x = tfkl.Dropout(0.2)(x)
-        
-        x = tfkl.Dense(512,activation = "relu")(x)
-        
+
+        x = tfkl.Dense(512, activation="relu")(x)
+
         x = tfkl.Dropout(0.3)(x)
-        
-        x = tfkl.Dense(256,activation = "relu")(x)
-        
+
+        x = tfkl.Dense(256, activation="relu")(x)
+
         x = tfkl.Dropout(0.4)(x)
 
         output_layer = tfkl.Dense(

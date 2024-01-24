@@ -10,7 +10,7 @@ build_param_1 = {
 
 compile_param_1 = {
     "loss": tfk.losses.MeanSquaredError(),
-    "optimizer": tfk.optimizers.Adam(learning_rate=0.001)
+    "optimizer": tfk.optimizers.Adam(learning_rate=0.001),
 }
 
 fit_param_1 = {
@@ -22,7 +22,7 @@ fit_param_1 = {
             patience=15,
             mode="min",
             min_delta=0.00001,
-            restore_best_weights=True
+            restore_best_weights=True,
         )
     ],
 }
@@ -37,22 +37,28 @@ class ConvLSTMDense_conv_2(GeneralModel):
         tf.random.set_seed(self.seed)
 
         input_layer = tfkl.Input(shape=self.build_kwargs["input_shape"], name="Input")
-        
+
         x = DataAugmentation(prob=0.5, min_sigma=0.015, max_sigma=0.03)(input_layer)
 
         x = tfkl.Dropout(0.1)(x)
 
-        x = tfkl.Conv1D(128, 3, padding='same', activation='relu', name='conv_0')(x)
-        
-        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm_1'), name='bidirectional_lstm_1')(x)
+        x = tfkl.Conv1D(128, 3, padding="same", activation="relu", name="conv_0")(x)
 
-        x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv_1')(x)
+        x = tfkl.Bidirectional(
+            tfkl.LSTM(64, return_sequences=True, name="lstm_1"),
+            name="bidirectional_lstm_1",
+        )(x)
 
-        x = tfkl.Bidirectional(tfkl.LSTM(64, return_sequences=True, name='lstm_2'), name='bidirectional_lstm_2')(x)
+        x = tfkl.Conv1D(64, 3, padding="same", activation="relu", name="conv_1")(x)
 
-        x = tfkl.Conv1D(128, 3, padding='same', activation='relu', name='conv_2')(x)
+        x = tfkl.Bidirectional(
+            tfkl.LSTM(64, return_sequences=True, name="lstm_2"),
+            name="bidirectional_lstm_2",
+        )(x)
 
-        x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv_3')(x)
+        x = tfkl.Conv1D(128, 3, padding="same", activation="relu", name="conv_2")(x)
+
+        x = tfkl.Conv1D(64, 3, padding="same", activation="relu", name="conv_3")(x)
 
         x = tfkl.Flatten()(x)
 

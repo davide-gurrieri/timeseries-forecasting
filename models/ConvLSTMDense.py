@@ -22,7 +22,7 @@ fit_param_1 = {
             patience=6,
             mode="min",
             min_delta=0.00001,
-            restore_best_weights=True
+            restore_best_weights=True,
         )
     ],
 }
@@ -37,15 +37,17 @@ class ConvLSTMDense(GeneralModel):
         tf.random.set_seed(self.seed)
 
         input_layer = tfkl.Input(shape=self.build_kwargs["input_shape"], name="Input")
-        
+
         x = DataAugmentation(prob=0.4, min_sigma=0.015, max_sigma=0.04)(input_layer)
-        
+
         # x = tfkl.Masking(mask_value=PADDING_VALUE)
 
-        x = tfkl.Bidirectional(tfkl.LSTM(96, return_sequences=True, name='lstm'), name='bidirectional_lstm')(x)
+        x = tfkl.Bidirectional(
+            tfkl.LSTM(96, return_sequences=True, name="lstm"), name="bidirectional_lstm"
+        )(x)
 
-        x = tfkl.Conv1D(64, 3, padding='same', activation='relu', name='conv')(x)
-        
+        x = tfkl.Conv1D(64, 3, padding="same", activation="relu", name="conv")(x)
+
         x = tfkl.Flatten()(x)
 
         output_layer = tfkl.Dense(

@@ -18,18 +18,11 @@ fit_param_1 = {
     "epochs": 200,
     "callbacks": [
         tfk.callbacks.EarlyStopping(
-            monitor="val_loss",
-            patience=6,
-            mode="min",
-            restore_best_weights=True
+            monitor="val_loss", patience=6, mode="min", restore_best_weights=True
         ),
         tfk.callbacks.ReduceLROnPlateau(
-            monitor='val_loss',
-            mode='min',
-            patience=5,
-            factor=0.1,
-            min_lr=1e-5
-        )
+            monitor="val_loss", mode="min", patience=5, factor=0.1, min_lr=1e-5
+        ),
     ],
 }
 
@@ -42,14 +35,16 @@ class ConvLSTMDenseGAP(GeneralModel):
     def build(self):
         tf.random.set_seed(self.seed)
 
-        #relu_init = tfk.initializers.HeUniform(seed=self.seed)
+        # relu_init = tfk.initializers.HeUniform(seed=self.seed)
 
         input_layer = tfkl.Input(shape=self.build_kwargs["input_shape"], name="Input")
 
-        x = tfkl.Bidirectional(tfkl.LSTM(32, return_sequences=True, name='lstm'), name='bidirectional_lstm')(input_layer)
+        x = tfkl.Bidirectional(
+            tfkl.LSTM(32, return_sequences=True, name="lstm"), name="bidirectional_lstm"
+        )(input_layer)
 
-        x = tfkl.Conv1D(32, 3, padding='same', activation='relu', name='conv')(x)
-        
+        x = tfkl.Conv1D(32, 3, padding="same", activation="relu", name="conv")(x)
+
         x = tfkl.GlobalAveragePooling1D()(x)
 
         output_layer = tfkl.Dense(
